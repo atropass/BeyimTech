@@ -29,6 +29,11 @@ class UserResponse(UserBase):
     last_name: str
     phone_number: Optional[str] = None
 
+class GptRequest(BaseModel):
+    query: str
+class GptAnswer(BaseModel):
+    message: str
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -49,7 +54,6 @@ class StudentResponse(BaseModel):
 
     class Config:
         orm_mode = True
-
 
 class TestDetailCreate(BaseModel):
     user_id: int

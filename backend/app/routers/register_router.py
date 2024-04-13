@@ -5,12 +5,23 @@ from ..models.models import Base, User, Student
 from ..schemas import schemas
 from ..dependencies import pwd_context
 from ..schemas.schemas import UserCreate, User as UserSchema, Token, UserLogin
-from ..dependencies import get_password_hash, create_access_token, get_current_user, SessionLocal
+from ..dependencies import get_password_hash, create_access_token, verify_token, get_user, SessionLocal
 from ..database import get_db
 from ..routers import student_router
 from fastapi import APIRouter
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def authenticate_user(email: str, password: str, db: Session):
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        return False
+    if not pwd_context.verify(password, user.password_hash):
+        return False
+    return user
+
 
 @router.post("/register/", response_model=schemas.User)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -53,10 +64,10 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return db_user
 
 
-@router.post("/login", response_model=Token)
-def login_for_access_token(form_data: UserLogin, db: Session = Depends(lambda: SessionLocal())):
-    user = db.query(User).filter(User.email == form_data.email).first()
-    if not user or not pwd_context.verify(form_data.password, user.password_hash):
+@router.post("/token", response_model=Token)
+def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = authenticate_user(form_data.username, form_data.password, db)
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -64,3 +75,16 @@ def login_for_access_token(form_data: UserLogin, db: Session = Depends(lambda: S
         )
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.get('/users')
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(lambda: SessionLocal())):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    payload = verify_token(token, credentials_exception)
+    user = get_user(db, username=payload["sub"])
+    if user is None:
+        raise credentials_exception
+    return user

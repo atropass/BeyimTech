@@ -23,7 +23,7 @@ class Student(Base):
     last_test_date = Column(Date)
     upcoming_test_date = Column(Date)
     # Relationship to model the Student-Teacher
-    teachers = relationship('Teacher', secondary='student_teacher', back_populates='students')
+    teachers = relationship('Teacher', secondary='studentteacher', back_populates='students')
 
 class Teacher(Base):
     __tablename__ = 'teachers'

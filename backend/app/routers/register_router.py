@@ -23,7 +23,7 @@ def authenticate_user(email: str, password: str, db: Session):
     return user
 
 
-@router.post("/register/", response_model=schemas.User)
+@router.post("/register/", response_model=schemas.UserResponse)
 def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     print("Received user data:", user)  # Debug print to see what is received
     db_user = db.query(models.User).filter(models.User.email == user.email).first()
@@ -36,6 +36,9 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
     password_hash = get_password_hash(user.password)
     db_user = models.User(email=user.email, password_hash=password_hash, role=user.role)
     db.add(db_user)
+    db.commit()
+    db_profile = models.UserProfile(user_id=db_user.user_id, first_name=user.first_name, last_name=user.last_name, phone_number=user.phone_number)
+    db.add(db_profile)
     db.commit()
 
     if user.role == "student":
@@ -61,7 +64,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
     db.commit()
 
-    return db_user
+    return schemas.UserResponse(role=db_user.role, email=db_user.email, first_name=db_profile.first_name, last_name=db_profile.last_name, phone_number=db_profile.phone_number)
 
 
 @router.post("/token", response_model=Token)
@@ -73,8 +76,8 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    access_token = create_access_token(data={"sub": user.email, "user_id": user.user_id})
+    return {"access_token": access_token, "token_type": "bearer", "user_id": user.user_id}
 
 @router.get('/users')
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(lambda: SessionLocal())):

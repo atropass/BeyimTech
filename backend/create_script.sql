@@ -78,44 +78,42 @@ CREATE TABLE ParentStudent (
     PRIMARY KEY (parent_id, student_id)
 );
 
--- Calendar Table
-CREATE TABLE Calendar (
-    calendar_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,  -- Generic user_id to link with any user type
-    date DATE NOT NULL,
-    event_type event_type NOT NULL,
-    details_id INT,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
-);
+
 
 -- TestDetails Table
 CREATE TABLE TestDetails (
     test_detail_id SERIAL PRIMARY KEY,
-    calendar_id INT NOT NULL,
+    user_id INT NOT NULL,
     test_type test_type NOT NULL,
     test_date DATE NOT NULL,
     overall_score DECIMAL,
-    FOREIGN KEY (calendar_id) REFERENCES Calendar(calendar_id)
+    listening_score DECIMAL,
+    speaking_score DECIMAL,
+    writing_score DECIMAL,
+    reading_score DECIMAL,
 );
 
 -- SpeakingTestDetails Table
 CREATE TABLE SpeakingTestDetails (
     speaking_id SERIAL PRIMARY KEY,
-    test_detail_id INT NOT NULL,
+    user_id INT NOT NULL,
+    test_type test_type NOT NULL,
+    test_date DATE NOT NULL,
     fluency_score DECIMAL,
     coherence_score DECIMAL,
     lexical_resource_score DECIMAL,
     grammatical_range_score DECIMAL,
     accuracy_score DECIMAL,
     pronunciation_score DECIMAL,
-    overall_speaking_score DECIMAL,
-    FOREIGN KEY (test_detail_id) REFERENCES TestDetails(test_detail_id)
+    overall_speaking_score DECIMAL
 );
 
 -- WritingTestDetails Table
 CREATE TABLE WritingTestDetails (
     writing_id SERIAL PRIMARY KEY,
-    test_detail_id INT NOT NULL,
+    user_id INT NOT NULL,
+    test_type test_type NOT NULL,
+    test_date DATE NOT NULL,
     task1_achievement_score DECIMAL,
     task1_coherence_score DECIMAL,
     task1_lexical_resource_score DECIMAL,
@@ -124,22 +122,22 @@ CREATE TABLE WritingTestDetails (
     task2_coherence_score DECIMAL,
     task2_lexical_resource_score DECIMAL,
     task2_grammatical_range_score DECIMAL,
-    overall_writing_score DECIMAL,
-    FOREIGN KEY (test_detail_id) REFERENCES TestDetails(test_detail_id)
+    overall_writing_score DECIMAL
 );
 
 -- ListeningTestDetails Table
 CREATE TABLE ListeningTestDetails (
     listening_id SERIAL PRIMARY KEY,
-    test_detail_id INT NOT NULL,
+    user_id INT NOT NULL,
+    test_type test_type NOT NULL,
+    test_date DATE NOT NULL,
     multiple_choice_score INT,
     matching_questions_score INT,
     diagram_labelling_score INT,
     summary_completion_score INT,
     sentence_completion_score INT,
     short_answer_score INT,
-    overall_listening_score DECIMAL,
-    FOREIGN KEY (test_detail_id) REFERENCES TestDetails(test_detail_id)
+    overall_listening_score DECIMAL
 );
 
 
@@ -147,7 +145,9 @@ CREATE TABLE ListeningTestDetails (
 -- ReadingTestDetails Table
 CREATE TABLE ReadingTestDetails (
     reading_id SERIAL PRIMARY KEY,
-    test_detail_id INT NOT NULL,
+    user_id INT NOT NULL,
+    test_type test_type NOT NULL,
+    test_date DATE NOT NULL,
     matching_headings_score INT,
     multiple_choice_score INT,
     short_answer_score INT,
@@ -160,14 +160,13 @@ CREATE TABLE ReadingTestDetails (
     table_completion_score INT,
     matching_information_score INT,
     diagram_labelling_score INT,
-    overall_reading_score DECIMAL,
-    FOREIGN KEY (test_detail_id) REFERENCES TestDetails(test_detail_id)
+    overall_reading_score DECIMAL
 );
 
 -- LessonDetails Table
 CREATE TABLE LessonDetails (
     lesson_detail_id SERIAL PRIMARY KEY,
-    calendar_id INT NOT NULL,
+    user_id INT NOT NULL,
     discipline VARCHAR(255),
     attendance BOOLEAN,
     punctuality BOOLEAN,
@@ -175,7 +174,6 @@ CREATE TABLE LessonDetails (
     participation_score DECIMAL,
     teacher_comments TEXT,
     additional_notes TEXT,
-    FOREIGN KEY (calendar_id) REFERENCES Calendar(calendar_id)
 );
 
 

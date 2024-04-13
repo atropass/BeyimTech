@@ -1,8 +1,8 @@
-from sqlalchemy import Table, Column, Integer, ForeignKey, Enum
+from sqlalchemy import Table, Column, Integer, ForeignKey, Enum, Float, create_engine
 from ..database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
-
+from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 student_teacher = Table('student_teacher', Base.metadata,
     Column('student_id', Integer, ForeignKey('students.student_id')),
     Column('teacher_id', Integer, ForeignKey('teachers.teacher_id'))
@@ -31,13 +31,87 @@ class Teacher(Base):
     department = Column(String)
     students = relationship('Student', secondary=student_teacher, back_populates='teachers')
 
-class Calendar(Base):
-    __tablename__ = 'calendar'
-    calendar_id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.user_id'))
-    date = Column(Date, nullable=False)
-    event_type = Column(Enum('test', 'lesson'), nullable=False)
-    details_id = Column(Integer, nullable=True)
-    user = relationship('User', back_populates='calendar_entries')
 
-User.calendar_entries = relationship('Calendar', order_by=Calendar.calendar_id, back_populates='user')
+class TestDetails(Base):
+    __tablename__ = 'testdetails'
+    test_detail_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    test_type = Column(String)
+    test_date = Column(Date)
+    overall_score = Column(Float)
+    listening_score = Column(Float)
+    speaking_score = Column(Float)
+    writing_score = Column(Float)
+    reading_score = Column(Float)
+
+
+
+class ListeningDetails(Base):
+    __tablename__ = 'listeningtestdetails'
+    listening_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer)
+    test_type = Column(String)
+    test_date = Column(Date)
+    multiple_choice_score = Column(Integer)
+    matching_questions_score = Column(Integer)
+    diagram_labelling_score = Column(Integer)
+    summary_completion_score = Column(Integer)
+    sentence_completion_score = Column(Integer)
+    short_answer_score = Column(Integer)
+    overall_listening_score = Column(Float)
+    
+class SpeakingTestDetails(Base):
+    __tablename__ = 'speakingtestdetails'
+    user_id = Column(Integer)
+    speaking_id = Column(Integer, primary_key=True)
+    test_type = Column(String, nullable=False)
+    test_date = Column(Date, nullable=False)
+    fluency_score = Column(Integer)
+    coherence_score = Column(Integer)
+    lexical_resource_score = Column(Integer)
+    grammatical_range_score = Column(Integer)
+    accuracy_score = Column(Integer)
+    pronunciation_score = Column(Integer)
+    overall_speaking_score = Column(Integer)
+
+class WritingTestDetails(Base):
+    __tablename__ = 'writingtestdetails'
+    user_id = Column(Integer)
+    writing_id = Column(Integer, primary_key=True)
+    test_type = Column(String, nullable=False)
+    test_date = Column(Date, nullable=False)
+    task1_achievement_score = Column(Integer)
+    task1_coherence_score = Column(Integer)
+    task1_lexical_resource_score = Column(Integer)
+    task1_grammatical_range_score = Column(Integer)
+    task2_response_score = Column(Integer)
+    task2_coherence_score = Column(Integer)
+    task2_lexical_resource_score = Column(Integer)
+    task2_grammatical_range_score = Column(Integer)
+    overall_writing_score = Column(Integer)
+
+class ReadingTestDetails(Base):
+    __tablename__ = 'readingtestdetails'
+    user_id = Column(Integer)
+    reading_id = Column(Integer, primary_key=True)
+    test_type = Column(String, nullable=False)
+    test_date = Column(Date, nullable=False)
+    matching_headings_score = Column(Integer)
+    multiple_choice_score = Column(Integer)
+    short_answer_score = Column(Integer)
+    name_matching_score = Column(Integer)
+    true_false_not_given_score = Column(Integer)
+    yes_no_not_given_score = Column(Integer)
+    summary_completion_score = Column(Integer)
+    matching_sentence_endings_score = Column(Integer)
+    sentence_completion_score = Column(Integer)
+    table_completion_score = Column(Integer)
+    matching_information_score = Column(Integer)
+    diagram_labelling_score = Column(Integer)
+    overall_reading_score = Column(Integer)
+
+
+# Setup for example
+engine = create_engine('sqlite:///:memory:')
+Base.metadata.create_all(engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

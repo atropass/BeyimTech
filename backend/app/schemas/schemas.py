@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr, validator
 from datetime import date
 class UserBase(BaseModel):
@@ -36,20 +36,166 @@ class StudentResponse(BaseModel):
     class Config:
         orm_mode = True
 
-class CalendarBase(BaseModel):
+
+class TestDetailCreate(BaseModel):
     user_id: int
-    date: date
-    event_type: str
-
-class CalendarCreate(CalendarBase):
-    pass
-
-class CalendarUpdate(CalendarBase):
-    details_id: Optional[int]
-
-class CalendarResponse(CalendarBase):
-    calendar_id: int
-    details_id: Optional[int]
+    test_type: str = "IELTS"
+    test_date: date
+    overall_score: Optional[float]
+    listening_score: Optional[float]
+    speaking_score: Optional[float]
+    writing_score: Optional[float]
+    reading_score: Optional[float]
     
+
+class TestDetailResponse(BaseModel):
+    user_id: int
+    test_type: str
+    test_date: date
+    overall_score: Optional[float]
+    listening_score: Optional[float]
+    speaking_score: Optional[float]
+    writing_score: Optional[float]
+    reading_score: Optional[float]
+
     class Config:
         orm_mode = True
+
+
+class TestDetailByDatesRequest(BaseModel):
+    user_id: int
+    date_from: date
+    date_to: date
+
+class ListeningTestDetailCreate(BaseModel):
+    user_id: int
+    test_type: str = "IELTS"
+    test_date: date
+    multiple_choice_score: Optional[int]
+    matching_questions_score: Optional[int]
+    diagram_labelling_score: Optional[int]
+    summary_completion_score: Optional[int]
+    sentence_completion_score: Optional[int]
+    short_answer_score: Optional[int]
+    overall_listening_score: Optional[float]
+
+class ListeningTestDetailResponse(BaseModel):
+    listening_id: int
+    test_type: str
+    test_date: date
+    multiple_choice_score: Optional[int]
+    matching_questions_score: Optional[int]
+    diagram_labelling_score: Optional[int]
+    summary_completion_score: Optional[int]
+    sentence_completion_score: Optional[int]
+    short_answer_score: Optional[int]
+    overall_listening_score: Optional[float]
+
+    class Config:
+        orm_mode = True
+
+
+class ReadingTestDetailCreate(BaseModel):
+    user_id: int
+    test_type: str = "IELTS"
+    test_date: date
+    matching_headings_score: Optional[int]
+    multiple_choice_score: Optional[int]
+    short_answer_score: Optional[int]
+    name_matching_score: Optional[int]
+    true_false_not_given_score: Optional[int]
+    yes_no_not_given_score: Optional[int]
+    summary_completion_score: Optional[int]
+    matching_sentence_endings_score: Optional[int]
+    sentence_completion_score: Optional[int]
+    table_completion_score: Optional[int]
+    matching_information_score: Optional[int]
+    diagram_labelling_score: Optional[int]
+    overall_reading_score: Optional[float]
+
+class ReadingTestDetailResponse(BaseModel):
+    user_id: int
+    test_type: str
+    test_date: date
+    matching_headings_score: Optional[int]
+    multiple_choice_score: Optional[int]
+    short_answer_score: Optional[int]
+    name_matching_score: Optional[int]
+    true_false_not_given_score: Optional[int]
+    yes_no_not_given_score: Optional[int]
+    summary_completion_score: Optional[int]
+    matching_sentence_endings_score: Optional[int]
+    sentence_completion_score: Optional[int]
+    table_completion_score: Optional[int]
+    matching_information_score: Optional[int]
+    diagram_labelling_score: Optional[int]
+    overall_reading_score: Optional[float]
+
+    class Config:
+        orm_mode = True\
+
+
+class SpeakingTestDetailCreate(BaseModel):
+    user_id: int
+    test_type: str = "IELTS"
+    test_date: date
+    fluency_score: Optional[float]
+    coherence_score: Optional[float]
+    lexical_resource_score: Optional[float]
+    grammatical_range_score: Optional[float]
+    accuracy_score: Optional[float]
+    pronunciation_score: Optional[float]
+    overall_speaking_score: Optional[float]
+
+class SpeakingTestDetailResponse(BaseModel):
+    user_id: int
+    test_type: str
+    test_date: date
+    fluency_score: Optional[float]
+    coherence_score: Optional[float]
+    lexical_resource_score: Optional[float]
+    grammatical_range_score: Optional[float]
+    accuracy_score: Optional[float]
+    pronunciation_score: Optional[float]
+    overall_speaking_score: Optional[float]
+
+    class Config:
+        orm_mode = True
+
+
+class WritingTestDetailCreate(BaseModel):
+    user_id: int
+    test_type: str = "IELTS"
+    test_date: date
+    task1_achievement_score: Optional[float]
+    task1_coherence_score: Optional[float]
+    task1_lexical_resource_score: Optional[float]
+    task1_grammatical_range_score: Optional[float]
+    task2_response_score: Optional[float]
+    task2_coherence_score: Optional[float]
+    task2_lexical_resource_score: Optional[float]
+    task2_grammatical_range_score: Optional[float]
+    overall_writing_score: Optional[float]
+
+class WritingTestDetailResponse(BaseModel):
+    user_id: int
+    test_type: str
+    test_date: date
+    task1_achievement_score: Optional[float]
+    task1_coherence_score: Optional[float]
+    task1_lexical_resource_score: Optional[float]
+    task1_grammatical_range_score: Optional[float]
+    task2_response_score: Optional[float]
+    task2_coherence_score: Optional[float]
+    task2_lexical_resource_score: Optional[float]
+    task2_grammatical_range_score: Optional[float]
+    overall_writing_score: Optional[float]
+
+    class Config:
+        orm_mode = True
+
+class CombinedTestDetailResponse(BaseModel):
+    listening_details: List[ListeningTestDetailResponse]
+    speaking_details: List[SpeakingTestDetailResponse]
+    writing_details: List[WritingTestDetailResponse]
+    reading_details: List[ReadingTestDetailResponse]

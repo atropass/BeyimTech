@@ -31,6 +31,31 @@ class Teacher(Base):
     department = Column(String)
     students = relationship('Student', secondary=student_teacher, back_populates='teachers')
 
+class UserProfile(Base):
+    __tablename__ = 'userprofile'
+
+    profile_id = Column(Integer,primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.user_id'))
+    first_name = Column(String(255), nullable=True)  # Assuming nullable for optional fields
+    last_name = Column(String(255), nullable=True)
+    phone_number = Column(String(20), nullable=True)
+
+
+class StudentTeacher(Base):
+    __tablename__ = 'studentteacher'
+    
+    student_id = Column(Integer, ForeignKey('students.student_id'), primary_key=True)
+    teacher_id = Column(Integer, ForeignKey('teachers.teacher_id'), primary_key=True)
+
+class Parents(Base):
+    __tablename__ = 'parents'
+    parent_id = Column(Integer, primary_key=True)
+    
+class ParentStudent(Base):
+    __tablename__ = 'parentstudent'
+    
+    parent_id = Column(Integer, ForeignKey('parents.parent_id'), primary_key=True)
+    student_id = Column(Integer, ForeignKey('students.student_id'), primary_key=True)
 
 class TestDetails(Base):
     __tablename__ = 'testdetails'

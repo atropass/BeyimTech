@@ -178,3 +178,16 @@ CREATE TABLE LessonDetails (
     FOREIGN KEY (calendar_id) REFERENCES Calendar(calendar_id)
 );
 
+
+
+getstudents(teacher_id)
+addstudent(teacher_id, full infa stduent)
+getstudent(student_id)
+addtestscore(student_id, infa, score)
+gettestsession(student_id)
+addlessonfeedback(student_id, infa, feedback)
+
+
+chatgpt()
+
+

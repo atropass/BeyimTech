@@ -6,7 +6,7 @@ from .schemas import schemas
 from .dependencies import pwd_context
 from .schemas.schemas import UserCreate, User as UserSchema, Token, UserLogin
 from .dependencies import get_password_hash, create_access_token, get_current_user, SessionLocal
-from database import get_db
+from .database import get_db
 
 app = FastAPI()
 

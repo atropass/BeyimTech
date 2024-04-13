@@ -1,4 +1,4 @@
--- Create ENUM type for user roles
+-- User Roles ENUM Type
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
@@ -6,7 +6,7 @@ BEGIN
     END IF;
 END$$;
 
--- Create ENUM type for event types in Calendar
+-- Event Types ENUM Type
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'event_type') THEN
@@ -14,7 +14,7 @@ BEGIN
     END IF;
 END$$;
 
--- Create ENUM type for test types in TestDetails
+-- Test Types ENUM Type
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'test_type') THEN
@@ -30,6 +30,26 @@ CREATE TABLE Users (
     role user_role NOT NULL
 );
 
+-- Student Table inheriting from Users
+CREATE TABLE Students (
+    student_id INT PRIMARY KEY REFERENCES Users(user_id) ON DELETE CASCADE,
+    age INT NOT NULL,
+    grade VARCHAR(50),
+    last_test_date DATE,
+    upcoming_test_date DATE
+);
+
+-- Teacher Table inheriting from Users
+CREATE TABLE Teachers (
+    teacher_id INT PRIMARY KEY REFERENCES Users(user_id) ON DELETE CASCADE,
+    department VARCHAR(255)
+);
+
+-- Parent Table inheriting from Users
+CREATE TABLE Parents (
+    parent_id INT PRIMARY KEY REFERENCES Users(user_id) ON DELETE CASCADE
+);
+
 -- UserProfile Table
 CREATE TABLE UserProfile (
     profile_id SERIAL PRIMARY KEY,
@@ -40,32 +60,32 @@ CREATE TABLE UserProfile (
     FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
--- StudentTeacher Table
+-- StudentTeacher Relationship Table
 CREATE TABLE StudentTeacher (
     student_id INT NOT NULL,
     teacher_id INT NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES Users(user_id),
-    FOREIGN KEY (teacher_id) REFERENCES Users(user_id),
+    FOREIGN KEY (student_id) REFERENCES Students(student_id),
+    FOREIGN KEY (teacher_id) REFERENCES Teachers(teacher_id),
     PRIMARY KEY (student_id, teacher_id)
 );
 
--- ParentStudent Table
+-- ParentStudent Relationship Table
 CREATE TABLE ParentStudent (
     parent_id INT NOT NULL,
     student_id INT NOT NULL,
-    FOREIGN KEY (parent_id) REFERENCES Users(user_id),
-    FOREIGN KEY (student_id) REFERENCES Users(user_id),
+    FOREIGN KEY (parent_id) REFERENCES Parents(parent_id),
+    FOREIGN KEY (student_id) REFERENCES Students(student_id),
     PRIMARY KEY (parent_id, student_id)
 );
 
 -- Calendar Table
 CREATE TABLE Calendar (
     calendar_id SERIAL PRIMARY KEY,
-    student_id INT NOT NULL,
+    user_id INT NOT NULL,  -- Generic user_id to link with any user type
     date DATE NOT NULL,
     event_type event_type NOT NULL,
     details_id INT,
-    FOREIGN KEY (student_id) REFERENCES Users(user_id)
+    FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
 
 -- TestDetails Table
@@ -73,6 +93,7 @@ CREATE TABLE TestDetails (
     test_detail_id SERIAL PRIMARY KEY,
     calendar_id INT NOT NULL,
     test_type test_type NOT NULL,
+    test_date DATE NOT NULL,
     overall_score DECIMAL,
     FOREIGN KEY (calendar_id) REFERENCES Calendar(calendar_id)
 );
@@ -121,6 +142,8 @@ CREATE TABLE ListeningTestDetails (
     FOREIGN KEY (test_detail_id) REFERENCES TestDetails(test_detail_id)
 );
 
+
+
 -- ReadingTestDetails Table
 CREATE TABLE ReadingTestDetails (
     reading_id SERIAL PRIMARY KEY,
@@ -154,3 +177,4 @@ CREATE TABLE LessonDetails (
     additional_notes TEXT,
     FOREIGN KEY (calendar_id) REFERENCES Calendar(calendar_id)
 );
+

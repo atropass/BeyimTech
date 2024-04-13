@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, ForeignKey
+from sqlalchemy import Table, Column, Integer, ForeignKey, Enum
 from ..database import Base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, Date, ForeignKey
@@ -30,3 +30,14 @@ class Teacher(Base):
     teacher_id = Column(Integer, ForeignKey('users.user_id'), primary_key=True)
     department = Column(String)
     students = relationship('Student', secondary=student_teacher, back_populates='teachers')
+
+class Calendar(Base):
+    __tablename__ = 'calendar'
+    calendar_id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.user_id'))
+    date = Column(Date, nullable=False)
+    event_type = Column(Enum('test', 'lesson'), nullable=False)
+    details_id = Column(Integer, nullable=True)
+    user = relationship('User', back_populates='calendar_entries')
+
+User.calendar_entries = relationship('Calendar', order_by=Calendar.calendar_id, back_populates='user')

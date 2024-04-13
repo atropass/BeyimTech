@@ -7,6 +7,9 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     role: str
+    first_name: str
+    last_name: str
+    phone_number: Optional[str] = None
 
 class UserLogin(UserBase):
     password: str
@@ -15,6 +18,12 @@ class User(UserBase):
     user_id: Optional[int]
     class Config:
         orm_mode = True
+
+class UserResponse(UserBase):
+    role: str
+    first_name: str
+    last_name: str
+    phone_number: Optional[str] = None
 
 class Token(BaseModel):
     access_token: str

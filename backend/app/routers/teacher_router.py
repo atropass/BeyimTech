@@ -12,8 +12,11 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @router.post("/teacher/students", response_model=schemas.StudentResponse)
-def add_student_to_teacher(student_id: int, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
-    student = db.query(models.Student).filter(models.Student.student_id == student_id).first()
+def add_student_to_teacher(first_name: str = None, last_name: str = None, email: str = None, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    if email is None:
+        student = db.query(models.UserProfile).filter(models.UserProfile.first_name == first_name and models.UserProfile.last_name == last_name).first().user_id
+    else:
+        student = db.query(models.User).filter(models.User.email == email).first().user_id
 
     if not student:
         raise HTTPException(status_code=404, detail="This mf doesnt exist")
@@ -21,11 +24,27 @@ def add_student_to_teacher(student_id: int, db: Session = Depends(get_db), token
     payload = verify_token(token, credentials_exception=HTTPException(status_code=status.HTTP_401_UNAUTHORIZED))
     teacher_id = payload.get("user_id")
 
-    db_student = models.StudentTeacher(student_id=student_id, teacher_id=teacher_id)
+    db_student = models.StudentTeacher(student_id=student, teacher_id=teacher_id)
     db.add(db_student)
     db.commit()
 
-    return db_student
+    student = db.query(models.User, models.UserProfile, models.Student) \
+    .join(models.UserProfile, models.User.user_id == models.UserProfile.user_id) \
+    .join(models.Student, models.User.user_id == models.Student.student_id) \
+    .filter(models.User.user_id == db_student.student_id).first()
+
+    print(student)
+
+    return schemas.StudentResponse(
+            student_id=student.Student.student_id,
+            email=student.User.email,
+            first_name=student.UserProfile.first_name,
+            last_name=student.UserProfile.last_name,
+            age=student.Student.age,
+            grade=student.Student.grade,
+            last_test_date=student.Student.last_test_date,
+            upcoming_test_date=student.Student.upcoming_test_date
+        )
 
 
 

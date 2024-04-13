@@ -40,6 +40,16 @@ class Calendar(Base):
     details_id = Column(Integer, nullable=True)
     user = relationship('User', back_populates='calendar_entries')
 
+class UserProfile(Base):
+    __tablename__ = 'userprofile'
+
+    profile_id = Column(Integer,primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.user_id'))
+    first_name = Column(String(255), nullable=True)  # Assuming nullable for optional fields
+    last_name = Column(String(255), nullable=True)
+    phone_number = Column(String(20), nullable=True)
+
+
 class StudentTeacher(Base):
     __tablename__ = 'studentteacher'
     

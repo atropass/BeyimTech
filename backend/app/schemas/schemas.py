@@ -10,6 +10,10 @@ class UserCreate(UserBase):
     first_name: str
     last_name: str
     phone_number: Optional[str] = None
+    student_age: Optional[int]= 99
+    student_grade: Optional[int] = 7
+    student_last_test_date: Optional[date]
+    student_upcoming_test_date: Optional[date]
 
 class UserLogin(UserBase):
     password: str
@@ -40,8 +44,8 @@ class StudentResponse(BaseModel):
     last_name: Optional[str] = None
     age: Optional[int] = None
     grade: Optional[str] = None
-    last_test_date: Optional[str] = None  # Using str for dates in the response is common
-    upcoming_test_date: Optional[str] = None
+    last_test_date: Optional[date] = None  # Using str for dates in the response is common
+    upcoming_test_date: Optional[date] = None
 
     class Config:
         orm_mode = True

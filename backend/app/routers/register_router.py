@@ -45,7 +45,10 @@ def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
         # Add to Students table
         db_student = models.Student(
             student_id=db_user.user_id,
-            age=99  # Default age as per your requirement
+            age=user.student_age,
+            grade=user.student_grade,
+            last_test_date=user.student_last_test_date,
+            upcoming_test_date=user.student_upcoming_test_date
         )
         db.add(db_student)
     elif user.role == "teacher":

@@ -35,3 +35,21 @@ class StudentResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class CalendarBase(BaseModel):
+    user_id: int
+    date: date
+    event_type: str
+
+class CalendarCreate(CalendarBase):
+    pass
+
+class CalendarUpdate(CalendarBase):
+    details_id: Optional[int]
+
+class CalendarResponse(CalendarBase):
+    calendar_id: int
+    details_id: Optional[int]
+    
+    class Config:
+        orm_mode = True

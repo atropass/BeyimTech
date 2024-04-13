@@ -23,7 +23,7 @@ class Student(Base):
     last_test_date = Column(Date)
     upcoming_test_date = Column(Date)
     # Relationship to model the Student-Teacher
-    teachers = relationship('Teacher', secondary='student_teacher', back_populates='students')
+    teachers = relationship('Teacher', secondary='studentteacher', back_populates='students')
 
 class Teacher(Base):
     __tablename__ = 'teachers'
@@ -39,5 +39,17 @@ class Calendar(Base):
     event_type = Column(Enum('test', 'lesson'), nullable=False)
     details_id = Column(Integer, nullable=True)
     user = relationship('User', back_populates='calendar_entries')
+
+class StudentTeacher(Base):
+    __tablename__ = 'studentteacher'
+    
+    student_id = Column(Integer, ForeignKey('students.student_id'), primary_key=True)
+    teacher_id = Column(Integer, ForeignKey('teachers.teacher_id'), primary_key=True)
+
+class ParentStudent(Base):
+    __tablename__ = 'parentstudent'
+    
+    parent_id = Column(Integer, ForeignKey('parents.parent_id'), primary_key=True)
+    student_id = Column(Integer, ForeignKey('students.student_id'), primary_key=True)
 
 User.calendar_entries = relationship('Calendar', order_by=Calendar.calendar_id, back_populates='user')

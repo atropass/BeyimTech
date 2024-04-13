@@ -19,6 +19,7 @@ class User(UserBase):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user_id: int
 
 class TokenData(BaseModel):
     username: str
@@ -26,12 +27,12 @@ class TokenData(BaseModel):
 class StudentResponse(BaseModel):
     student_id: int
     email: str
-    first_name: Optional[str]
-    last_name: Optional[str]
-    age: Optional[int]
-    grade: Optional[str]
-    last_test_date: Optional[str]  # Using str for dates in the response is common
-    upcoming_test_date: Optional[str]
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    age: Optional[int] = None
+    grade: Optional[str] = None
+    last_test_date: Optional[str] = None  # Using str for dates in the response is common
+    upcoming_test_date: Optional[str] = None
 
     class Config:
         orm_mode = True

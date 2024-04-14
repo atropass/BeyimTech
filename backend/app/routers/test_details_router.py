@@ -136,7 +136,7 @@ def get_testdetails_by_dates(user_id: int, date_from: date, date_to: date, db: S
     testdetails = db.query(models.TestDetails).filter(
         models.TestDetails.user_id == user_id,
         models.TestDetails.test_date.between(date_from, date_to)
-    ).all()
+    ).order_by(models.TestDetails.test_date).all()
 
     # Handling the case where no tests are found
     if not testdetails:
@@ -150,7 +150,7 @@ def get_listenings_by_dates(user_id: int, date_from: date, date_to: date, db: Se
     listening_details = db.query(models.ListeningDetails).filter(
         models.ListeningDetails.user_id == user_id,
         models.ListeningDetails.test_date.between(date_from, date_to)
-    ).all()
+    ).order_by(models.ListeningDetails.test_date).all()
 
     # Handling the case where no tests are found
     if not listening_details:
@@ -164,7 +164,7 @@ def get_speakings_by_dates(user_id: int, date_from: date, date_to: date, db: Ses
     speaking_details = db.query(models.SpeakingTestDetails).filter(
         models.SpeakingTestDetails.user_id == user_id,
         models.SpeakingTestDetails.test_date.between(date_from, date_to)
-    ).all()
+    ).order_by(models.SpeakingTestDetails.test_date).all()
 
     # Handling the case where no tests are found
     if not speaking_details:
@@ -179,7 +179,7 @@ def get_writings_by_dates(user_id: int, date_from: date, date_to: date, db: Sess
     writing_details = db.query(models.WritingTestDetails).filter(
         models.WritingTestDetails.user_id == user_id,
         models.WritingTestDetails.test_date.between(date_from, date_to)
-    ).all()
+    ).order_by(models.WritingTestDetails.test_date).all()
 
     # Handling the case where no tests are found
     if not writing_details:
@@ -194,7 +194,7 @@ def get_readings_by_dates(user_id: int, date_from: date, date_to: date, db: Sess
     reading_details = db.query(models.ReadingTestDetails).filter(
         models.ReadingTestDetails.user_id == user_id,
         models.ReadingTestDetails.test_date.between(date_from, date_to)
-    ).all()
+    ).order_by(models.ReadingTestDetails.test_date).all()
 
     # Handling the case where no tests are found
     if not reading_details:

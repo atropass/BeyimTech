@@ -59,6 +59,7 @@ prompt3_questioning = '''
     Based on the results, offer specific tips and advice on how they can improve their skills in each section. 
     Remember to encourage the student, emphasizing their strengths and the potential for improvement with targeted effort. 
     Write less than 200 words for each question. Do not answer answer the question not related to IELTS or student performance.
+    !!!Question is the last sentence of the query!!!
     RETURN TEXT IN A STRING FORMAT, WITHOUT LATEX CODE
 '''
 
@@ -91,12 +92,12 @@ async def ask_gpt_roadmap(user_id: int, date_from: date, date_to: date, db: Sess
     return GptAnswer(message=response)
 
 @router.get("/ask-gpt-question", response_model=schemas.GptAnswer)
-async def ask_gpt_question(user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
+async def ask_gpt_question(question: str, user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
     listening_details, speaking_details, writing_details, reading_details = get_all_records(user_id, date_from, date_to, db)
 
     formatted_data = format_for_analysis(listening_details, speaking_details, writing_details, reading_details)
-
-    response = ask_gpt(prompt3_questioning, formatted_data)
+    prompt = formatted_data + " " + question
+    response = ask_gpt(prompt3_questioning, prompt)
 
     return GptAnswer(message=response)
 

@@ -46,11 +46,21 @@ prompt2_roadmap = '''
     Recommend targeted activities to help achieve these goals, such as daily vocabulary exercises, weekly grammar workshops, 
     listening practice through podcasts, interactive speaking clubs, reading English literature, and writing essays 
     or journal entries. Additionally, suggest useful online resources, apps, and books. Conclude with general tips 
-    on maintaining motivation and consistency in their studies.
+    on maintaining motivation and consistency in their studies. Give me recommendations with SMART metrics.  
     RETURN TEXT IN A STRING FORMAT, WITHOUT LATEX CODE
 '''
 
-
+prompt3_questioning = '''
+    You are a digital teaching assistant programmed to help students improve their IELTS scores. 
+    A student has just completed their IELTS exam and received their results. 
+    Your task is to answer the question regarding Listening, 
+    Reading, Writing, and Speaking. Provide answers based on results provided, 
+    highlighting areas where they performed well and areas where improvement is needed. 
+    Based on the results, offer specific tips and advice on how they can improve their skills in each section. 
+    Remember to encourage the student, emphasizing their strengths and the potential for improvement with targeted effort. 
+    Write less than 200 words for each question. Do not answer answer the question not related to IELTS or student performance.
+    RETURN TEXT IN A STRING FORMAT, WITHOUT LATEX CODE
+'''
 
 @router.get("/test-format", response_model=schemas.GptAnswer)
 def test_format(user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
@@ -77,6 +87,16 @@ async def ask_gpt_roadmap(user_id: int, date_from: date, date_to: date, db: Sess
     formatted_data = format_for_analysis(listening_details, speaking_details, writing_details, reading_details)
 
     response = ask_gpt(prompt2_roadmap, formatted_data)
+
+    return GptAnswer(message=response)
+
+@router.get("/ask-gpt-question", response_model=schemas.GptAnswer)
+async def ask_gpt_question(user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
+    listening_details, speaking_details, writing_details, reading_details = get_all_records(user_id, date_from, date_to, db)
+
+    formatted_data = format_for_analysis(listening_details, speaking_details, writing_details, reading_details)
+
+    response = ask_gpt(prompt3_questioning, formatted_data)
 
     return GptAnswer(message=response)
 

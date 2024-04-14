@@ -33,22 +33,6 @@ def get_test_detail(test_detail_id: int, db: Session = Depends(get_db)):
     return test_detail
 
 
-@router.get("/test-details-by-date/", response_model=List[schemas.TestDetailResponse])
-def get_test_details_by_dates(user_id: int, date_from: date, date_to: date,  db: Session = Depends(get_db)):
-    test_details = db.query(models.TestDetails).filter(
-        models.TestDetails.user_id == user_id,
-        models.TestDetails.test_date.between(date_from, date_to)
-    ).all()
-    if not test_details:
-        raise HTTPException(status_code=404, detail="Test details not found")
-    return test_details
-
-
-    
-
-
-
-
 
 @router.post("/test-details/listening", response_model=schemas.ListeningTestDetailResponse)
 def create_listening(listening_detail: schemas.ListeningTestDetailCreate, db: Session = Depends(get_db)):
@@ -71,12 +55,12 @@ def create_listening(listening_detail: schemas.ListeningTestDetailCreate, db: Se
     return new_listening_detail
 
 
-@router.get("/test-details/listening/{listening_id}", response_model=schemas.ListeningTestDetailResponse)
-def get_listening(listening_id: int, db: Session = Depends(get_db)):
-    listening_id = db.query(models.ListeningDetails).filter(models.ListeningDetails.listening_id == listening_id).first()
-    if listening_id is None:
-        raise HTTPException(status_code=404, detail="Listening test detail not found")
-    return listening_id
+# @router.get("/test-details/listening/{listening_id}", response_model=schemas.ListeningTestDetailResponse)
+# def get_listening(listening_id: int, db: Session = Depends(get_db)):
+#     listening_id = db.query(models.ListeningDetails).filter(models.ListeningDetails.listening_id == listening_id).first()
+#     if listening_id is None:
+#         raise HTTPException(status_code=404, detail="Listening test detail not found")
+#     return listening_id
 
 @router.post("/test-details/reading", response_model=schemas.ReadingTestDetailResponse)
 def create_reading(reading_detail: schemas.ReadingTestDetailCreate, db: Session = Depends(get_db)):
@@ -146,48 +130,75 @@ def create_writing(writing_detail: schemas.WritingTestDetailCreate, db: Session 
 
     return new_writing_detail
 
-# @router.get("/test-details/listenings-by-date/", response_model=List[schemas.ListeningTestDetailResponse])
-# def get_test_details_by_dates(user_id: int, date_from: date, date_to: date,  db: Session = Depends(get_db)):
-#     listenings = db.query(models.ListeningDetails).filter(
-#         models.ListeningDetails.user_id == user_id,
-#         models.ListeningDetails.test_date.between(date_from, date_to)
-#     ).all()
-#     if not listenings:
-#         raise HTTPException(status_code=404, detail="ListeningDetails tests not found")
-#     return listenings
+@router.get("/get-testdetails-by-dates", response_model=List[schemas.TestDetailResponse])
+def get_testdetails_by_dates(user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
+    # Querying each detail category
+    testdetails = db.query(models.TestDetails).filter(
+        models.TestDetails.user_id == user_id,
+        models.TestDetails.test_date.between(date_from, date_to)
+    ).all()
 
+    # Handling the case where no tests are found
+    if not testdetails:
+        raise HTTPException(status_code=404, detail="No overall test details test details found in the specified date range")
+    # Constructing the combined response
+    return testdetails
 
-@router.get("/test-details/by-date-all/", response_model=schemas.CombinedTestDetailResponse)
-def get_all_test_details_by_dates(user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
+@router.get("/get-listening-by-dates", response_model=List[schemas.ListeningTestDetailResponse])
+def get_listenings_by_dates(user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
     # Querying each detail category
     listening_details = db.query(models.ListeningDetails).filter(
         models.ListeningDetails.user_id == user_id,
         models.ListeningDetails.test_date.between(date_from, date_to)
     ).all()
 
+    # Handling the case where no tests are found
+    if not listening_details:
+        raise HTTPException(status_code=404, detail="No listenings test details found in the specified date range")
+    # Constructing the combined response
+    return listening_details
+
+@router.get("/get-speaking-by-dates", response_model=List[schemas.SpeakingTestDetailResponse])
+def get_speakings_by_dates(user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
+    # Querying speaking test details within the given date range
     speaking_details = db.query(models.SpeakingTestDetails).filter(
         models.SpeakingTestDetails.user_id == user_id,
         models.SpeakingTestDetails.test_date.between(date_from, date_to)
     ).all()
 
+    # Handling the case where no tests are found
+    if not speaking_details:
+        raise HTTPException(status_code=404, detail="No speaking test details found in the specified date range")
+
+    # Returning the fetched test details
+    return speaking_details
+
+@router.get("/get-writing-by-dates", response_model=List[schemas.WritingTestDetailResponse])
+def get_writings_by_dates(user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
+    # Querying writing test details within the given date range
     writing_details = db.query(models.WritingTestDetails).filter(
         models.WritingTestDetails.user_id == user_id,
         models.WritingTestDetails.test_date.between(date_from, date_to)
     ).all()
 
+    # Handling the case where no tests are found
+    if not writing_details:
+        raise HTTPException(status_code=404, detail="No writing test details found in the specified date range")
+
+    # Returning the fetched test details
+    return writing_details
+
+@router.get("/get-reading-by-dates", response_model=List[schemas.ReadingTestDetailResponse])
+def get_readings_by_dates(user_id: int, date_from: date, date_to: date, db: Session = Depends(get_db)):
+    # Querying reading test details within the given date range
     reading_details = db.query(models.ReadingTestDetails).filter(
         models.ReadingTestDetails.user_id == user_id,
         models.ReadingTestDetails.test_date.between(date_from, date_to)
     ).all()
 
     # Handling the case where no tests are found
-    if not (listening_details or speaking_details or writing_details or reading_details):
-        raise HTTPException(status_code=404, detail="No test details found in the specified date range")
+    if not reading_details:
+        raise HTTPException(status_code=404, detail="No reading test details found in the specified date range")
 
-    # Constructing the combined response
-    return schemas.CombinedTestDetailResponse(
-        listening_details=listening_details,
-        speaking_details=speaking_details,
-        writing_details=writing_details,
-        reading_details=reading_details
-    )
+    # Returning the fetched test details
+    return reading_details

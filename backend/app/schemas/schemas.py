@@ -217,3 +217,30 @@ class CombinedTestDetailResponse(BaseModel):
     speaking_details: List[SpeakingTestDetailResponse]
     writing_details: List[WritingTestDetailResponse]
     reading_details: List[ReadingTestDetailResponse]
+
+
+
+
+class LessonDetailsCreate(BaseModel):
+    user_id : int
+    discipline : Optional[str]
+    attendance : Optional[bool]
+    punctuality : Optional[bool]
+    homework_completed : Optional[bool]
+    participation_score : Optional[int]
+    teacher_comments : Optional[str]
+    additional_notes : Optional[str]
+
+class LessonDetailsResponse(BaseModel):
+    lesson_detail_id : int
+    user_id : int
+    discipline : Optional[str]
+    attendance : Optional[bool]
+    punctuality : Optional[bool]
+    homework_completed : Optional[bool]
+    participation_score : Optional[int]
+    teacher_comments : Optional[str]
+    additional_notes : Optional[str]
+
+    class Config:
+        orm_mode = True

@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, Integer, ForeignKey, Enum, Float, create_engine
 from ..database import Base
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, Boolean
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 student_teacher = Table('student_teacher', Base.metadata,
     Column('student_id', Integer, ForeignKey('students.student_id')),
@@ -135,6 +135,18 @@ class ReadingTestDetails(Base):
     diagram_labelling_score = Column(Integer)
     overall_reading_score = Column(Integer)
 
+
+class LessonDetails(Base):
+    __tablename__ = 'lessondetails'
+    lesson_detail_id= Column(Integer, primary_key=True)
+    user_id= Column(Integer)
+    discipline= Column(String)
+    attendance= Column(Boolean)
+    punctuality= Column(Boolean)
+    homework_completed= Column(Boolean)
+    participation_score= Column(Integer)
+    teacher_comments= Column(String)
+    additional_notes= Column(String)
 
 # Setup for example
 engine = create_engine('sqlite:///:memory:')

@@ -59,3 +59,22 @@ def get_students_by_teacher(db: Session = Depends(get_db), token: str = Depends(
         email = db.query(models.User).filter(models.User.user_id == s.student_id).first().email
         res.append(schemas.StudentResponse(student_id=s.student_id, email=email))
     return res
+
+
+@router.post("/lessons-create/", response_model=schemas.LessonDetailsResponse)
+def create_lesson(lesson_details : schemas.LessonDetailsCreate, db: Session = Depends(get_db)):
+    new_lesson = models.LessonDetails(
+        user_id = lesson_details.user_id,
+        discipline = lesson_details.discipline,
+        attendance = lesson_details.attendance,
+        punctuality = lesson_details.punctuality,
+        homework_completed = lesson_details.homework_completed,
+        participation_score = lesson_details.participation_score,
+        teacher_comments = lesson_details.teacher_comments,
+        additional_notes = lesson_details.additional_notes
+    )
+    db.add(new_lesson)
+    db.commit()
+    db.refresh(new_lesson)
+
+    return new_lesson

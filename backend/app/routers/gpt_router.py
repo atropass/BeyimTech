@@ -35,7 +35,7 @@ prompt1_ielts = '''
     Based on the results, offer specific tips and advice on how they can improve their skills in each section. 
     Include suggestions for practice exercises, useful resources, and strategies for test-taking. 
     Remember to encourage the student, emphasizing their strengths and the potential for improvement with targeted effort.
-
+    RETURN TEXT IN A STRING FORMAT, WITHOUT LATEX CODE
 '''
 
 prompt2_roadmap = '''
@@ -47,6 +47,7 @@ prompt2_roadmap = '''
     listening practice through podcasts, interactive speaking clubs, reading English literature, and writing essays 
     or journal entries. Additionally, suggest useful online resources, apps, and books. Conclude with general tips 
     on maintaining motivation and consistency in their studies.
+    RETURN TEXT IN A STRING FORMAT, WITHOUT LATEX CODE
 '''
 
 
@@ -121,24 +122,22 @@ def get_all_records(user_id: int, date_from: date, date_to: date, db: Session = 
 
 def format_for_analysis(*args):
     """
-    Helper function to format the test details into a JSON string for analysis.
-    Converts dates to string format and handles JSON serialization of all other data,
-    including converting Decimal objects to string to avoid precision loss.
+    Helper function to format the test details into a human-readable string for analysis.
+    Converts dates to string format and handles conversion of Decimal objects to string to avoid precision loss.
     """
-    data = {}
+    result_str = ""
     for arg in args:
         for detail in arg:
             table_name = detail.__tablename__
-            if table_name not in data:
-                data[table_name] = []
-            record_data = {}
+            result_str += f"\n{table_name.upper()} DETAILS:\n"
             for column in detail.__table__.columns:
                 value = getattr(detail, column.name)
                 if isinstance(value, date):
-                    record_data[column.name] = value.isoformat()  # Converts date to "YYYY-MM-DD"
+                    formatted_value = value.isoformat()  # Converts date to "YYYY-MM-DD"
                 elif isinstance(value, Decimal):
-                    record_data[column.name] = str(value)  # Converts Decimal to string
+                    formatted_value = str(value)  # Converts Decimal to string
                 else:
-                    record_data[column.name] = value
-            data[table_name].append(record_data)
-    return json.dumps(data)
+                    formatted_value = str(value)
+                result_str += f"{column.name}: {formatted_value}\n"
+            result_str += "\n"
+    return result_str
